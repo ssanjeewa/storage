@@ -24,8 +24,13 @@ app.get("/", (req, res) => {
 });
 
 app.get('/download/:file', (req, res) => {
-    res.download(__dirname +"/files/" + req.query.file);
- 
+    res.download(__dirname +"/files/" + req.query.file, (err) => {
+        if (err) {
+          res.status(500).send({
+            message: "Could not download the file. " + err,
+          });
+        }
+    });    
 });
 
 app.post('/upload',
