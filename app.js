@@ -10,7 +10,9 @@ const fileSizeLimiter = require('./middleware/fileSizeLimiter');
 const PORT = process.env.PORT || 3500;
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:3000",
+  }));
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
