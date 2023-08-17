@@ -23,6 +23,11 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
 });
 
+app.get('/storage/:file', (req, res) => {
+    res.download(__dirname +"/files/" + req.query.file);
+ 
+});
+
 app.post('/upload',
     fileUpload({ createParentPath: true }),
     filesPayloadExists,
