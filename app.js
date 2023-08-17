@@ -12,6 +12,11 @@ const PORT = process.env.PORT || 3500;
 const app = express();
 app.use(cors({
     origin: "http://localhost:3500",
+    headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": POST, PUT, GET, OPTIONS,
+       // "Access-Control-Allow-Headers": Origin, X-Requested-With, Content-Type, Accept, Authorization,
+    },
   }));
 
 app.get("/", (req, res) => {
