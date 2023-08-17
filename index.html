@@ -50,8 +50,12 @@
             })
 
             const response = await fetch('http://localhost:3500/upload', {
-                mode: 'no-cors',
+               
                 method: 'POST',
+                headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Content-Type": "text/plain"
+               },
                 body: formData
             })
 
