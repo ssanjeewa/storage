@@ -29,7 +29,7 @@ app.get('/download/:file', (req, res) => {
         
         if (err) {
           res.status(500).send({
-            message: "Could not download the file. " + err,
+            message: __dirname +"/files/" + req.params.file,
           });
         }
     });    
