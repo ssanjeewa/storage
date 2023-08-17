@@ -14,8 +14,8 @@ app.use(cors({
     origin: "http://localhost:3500",
     headers: {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": POST, PUT, GET, OPTIONS,
-       // "Access-Control-Allow-Headers": Origin, X-Requested-With, Content-Type, Accept, Authorization,
+        "Access-Control-Allow-Methods": "*",
+       "Access-Control-Allow-Headers": "*",
     },
   }));
 
