@@ -24,7 +24,9 @@ app.get("/", (req, res) => {
 });
 
 app.get('/download/:file', (req, res) => {
+    console.log(__dirname +"/files/" + req.params.file)
     res.download(__dirname +"/files/" + req.params.file, (err) => {
+        
         if (err) {
           res.status(500).send({
             message: "Could not download the file. " + err,
