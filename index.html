@@ -50,6 +50,7 @@
             })
 
             const response = await fetch('http://localhost:3500/upload', {
+                mode: 'no-cors',
                 method: 'POST',
                 body: formData
             })
