@@ -13,13 +13,35 @@ const PORT = process.env.PORT || 3500;
 
 const app = express();
 app.use(cors({
-    origin: "http://localhost:3500",
+    origin: "*",
     headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "*",
        "Access-Control-Allow-Headers": "*",
     },
   }));
+
+  async function runUpload(filePath, fileName) {
+    const wsProvider = new WsProvider('ws://34.142.208.254:9944');
+    const api = await ApiPromise.create({ provider: wsProvider });
+    await api.isReady;
+    
+
+    const keyring = new Keyring({ type: 'sr25519' });
+    const alice = keyring.addFromUri('//Alice');
+    
+
+    try{
+        const submitExtrinsic = api.tx.cloudfile.addNewFile('256ytr54rft67uyh', filePath, fileName);
+        await submitExtrinsic.signAndSend(alice);
+       
+    }
+    catch(error){
+        console.log(error);
+    }  
+
+
+}
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
@@ -101,7 +123,7 @@ app.post('/upload',
     filesPayloadExists,
    // fileExtLimiter(['.png', '.jpg', '.jpeg']),
     fileSizeLimiter,
-    (req, res) => {
+    async (req, res) => {
         const files = req.files
         console.log(files)
         let fileP = "";
@@ -113,6 +135,12 @@ app.post('/upload',
                 if (err) return res.status(500).json({ status: "error", message: err })
             })
         })
+        try {
+            await runUpload("http://34.87.185.219:3500/download/"+fileP, fileP);
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(400);
+        }
 
         return res.json({ status: 'success', message: "http://34.87.185.219:3500/download/"+fileP })
     }
