@@ -2,7 +2,7 @@ const express = require("express");
 const fileUpload = require("express-fileupload");
 const path = require("path");
 var cors = require('cors');
-const { Keyring} = require('@polkadot/api');
+const { Keyring,  WsProvider, ApiPromise} = require('@polkadot/api');
 const { mnemonicGenerate } = require('@polkadot/util-crypto');
 
 const filesPayloadExists = require('./middleware/filesPayloadExists');
@@ -23,6 +23,38 @@ app.use(cors({
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
+});
+
+app.post('/transaction', async (req, res) => {
+    try { 
+        const { mnemonic, to } = req.params.body
+        const wsProvider = new WsProvider('ws://34.142.208.254:9944');
+        const api = await ApiPromise.create({ provider: wsProvider });
+        await api.isReady;
+        
+
+        if (!mnemonic || !to) {
+            console.log(error);
+            return res.sendStatus(400).json({
+                "message": "Invalid SEEDS"
+            });
+        }
+   
+        const keyring = new Keyring();
+        const pair = keyring.createFromUri(mnemonic);
+
+        const txHash = await api.tx.balances
+            .transfer(to, 12345)
+            .signAndSend(pair);
+
+        return res.status(200).json({
+            "message": "transaction success",
+            "trx": txHash
+        });
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
+    }
 });
 
 app.post('/createwallet', (req, res) => {
@@ -72,15 +104,17 @@ app.post('/upload',
     (req, res) => {
         const files = req.files
         console.log(files)
+        let fileP = "";
 
         Object.keys(files).forEach(key => {
             const filepath = path.join(__dirname, 'files', files[key].name)
+            fileP = files[key].name;
             files[key].mv(filepath, (err) => {
                 if (err) return res.status(500).json({ status: "error", message: err })
             })
         })
 
-        return res.json({ status: 'success', message: Object.keys(files).toString() })
+        return res.json({ status: 'success', message: "http://34.87.185.219:3500/download/"+fileP })
     }
 )
 
