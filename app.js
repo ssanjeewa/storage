@@ -2,6 +2,8 @@ const express = require("express");
 const fileUpload = require("express-fileupload");
 const path = require("path");
 var cors = require('cors');
+const { Keyring} = require('@polkadot/api');
+const { mnemonicGenerate } = require('@polkadot/util-crypto');
 
 const filesPayloadExists = require('./middleware/filesPayloadExists');
 const fileExtLimiter = require('./middleware/fileExtLimiter');
@@ -21,6 +23,33 @@ app.use(cors({
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
+});
+
+app.post('/createwallet', (req, res) => {
+    try {
+        const mnemonic = mnemonicGenerate();
+        // const keyring = new Keyring({ type: 'sr25519', ss58Format: 2 });
+
+        // const pair = keyring.addFromUri(mnemonic, { name: 'first pair' }, 'ed25519');
+
+        const keyring = new Keyring();
+        const pair = keyring.createFromUri(mnemonic);
+
+        // the pair has been added to our keyring
+        console.log(keyring.pairs.length, 'pairs available');
+
+        // log the name & address (the latter encoded with the ss58Format)
+        console.log(pair.meta.name, 'has address', pair.address);
+
+        return res.status(200).json({
+            "address": pair.address,
+            "seeds": mnemonic,
+            "public_key": keyring.encodeAddress(pair.publicKey)
+        });
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
+    }
 });
 
 app.get('/download/:file', (req, res) => {
