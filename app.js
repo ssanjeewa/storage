@@ -136,13 +136,13 @@ app.post('/upload',
             })
         })
         try {
-            await runUpload("http://34.87.185.219:3500/download/"+fileP, fileP);
+            await runUpload("https://files.bethel.network/download/"+fileP, fileP);
         } catch (error) {
             console.log(error);
             return res.sendStatus(400);
         }
 
-        return res.json({ status: 'success', message: "http://34.87.185.219:3500/download/"+fileP })
+        return res.json({ status: 'success', message: "https://files.bethel.network/download/"+fileP })
     }
 )
 
